@@ -26,7 +26,7 @@ services:
     networks:
       - backend_frontend_net
     depends_on:
-      db:
+      mysql:
         condition: service_healthy
 
   frontend:
