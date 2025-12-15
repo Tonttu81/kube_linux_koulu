@@ -35,7 +35,8 @@ services:
       - backend_frontend_net
     depends_on:
       - backend
-   
+    ports:
+      - "82:82"
 
 volumes:
   db_data:
