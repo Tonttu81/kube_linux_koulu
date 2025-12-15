@@ -1,8 +1,8 @@
-FROM nginx:alpine
+# syntax=docker/dockerfile:1
+FROM nginx:1.27-alpine
 
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY index.html /usr/share/nginx/html/index.html
+# Copy Nginx config and static assets
+COPY frontend/nginx.conf /etc/nginx/nginx.conf
+COPY frontend/index.html /usr/share/nginx/html/index.html
 
-EXPOSE 81
-
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 82
