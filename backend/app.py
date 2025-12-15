@@ -14,7 +14,7 @@ def get_db_connection():
 
 @app.route('/api/health')
 def health():
-    return jsonify({"status": "healthy"})
+    return jsonify({"status": "healthy " + os.getenv('DB_NAME') + " " + os.getenv('DB_USER')})
 
 @app.route('/api/users')
 def get_users():
