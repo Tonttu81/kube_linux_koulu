@@ -2,11 +2,11 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY backend/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app.py .
+COPY backend/ /app/
 
-EXPOSE 8000
+EXPOSE 7000
 
-CMD ["python", "app.py"]
+CMD ["gunicorn", "--workers", "3", "--bind", "0.0.0.0:8000", "app:app"]
