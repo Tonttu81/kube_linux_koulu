@@ -11,9 +11,9 @@ services:
       - backend_frontend_net
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
-      interval: 5s
-      timeout: 3s
-      retries: 20
+      interval: 2s
+      timeout: 1s
+      retries: 10
 
   backend:
     image: ${DOCKERHUB_USERNAME}/lemp-backend:latest
