@@ -1,0 +1,80 @@
+from flask import Flask, jsonify, request
+import mysql.connector
+import os
+
+app = Flask(__name__)
+
+def get_db_connection():
+    return mysql.connector.connect(
+        host=os.getenv('DB_HOST'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        database=os.getenv('DB_NAME')
+    )
+
+@app.route('/api/health')
+def health():
+    return jsonify({"status": "healthy"})
+
+@app.route('/api/users')
+def get_users():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM users")
+        users = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return jsonify(users)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/init-db')
+def init_db():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(100),
+                email VARCHAR(100)
+            )
+        """)
+        cursor.execute("""
+            INSERT INTO users (name, email) VALUES
+            ('John Doe', 'john@example.com'),
+            ('Jane Smith', 'jane@example.com')
+        """)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({"message": "Database initialized"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/api/user', methods=['POST'])
+def create_user():
+    data = request.get_json()
+    
+    if not data or 'name' not in data:
+        return jsonify({"error": "Missing name"}), 400
+    
+    name = data['name']
+    email = name.replace(' ', '.').lower()[:20]
+    email = email + '@example.com'
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        query = "INSERT INTO users (name, email) VALUES (%s, %s)"
+        cursor.execute(query, (name, email))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({"message": "User created"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8000)
