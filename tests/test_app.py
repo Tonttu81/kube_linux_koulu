@@ -1,7 +1,7 @@
 import sys
 import requests
 
-BASE_URL = "https://86.50.20.36/cicd"
+BASE_URL = "http://86.50.20.36/cicd"
 
 def check(endpoint):
     r = requests.get(f"{BASE_URL}{endpoint}", timeout=5)
